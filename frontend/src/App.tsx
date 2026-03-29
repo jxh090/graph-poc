@@ -310,7 +310,7 @@ function App() {
 
     useEffect(() => {
         // fetch("http://localhost:3000/chartData.json")
-        fetch("/chartData.json")
+        fetch(`${import.meta.env.BASE_URL}chartData.json`)
             .then((response) => response.json())
             .then((data) => {
                 setRealData(data);
@@ -322,7 +322,7 @@ function App() {
 
     useEffect(() => {
         // fetch("http://localhost:3000/investmentFees.json")
-        fetch("/investmentFees.json")
+        fetch(`${import.meta.env.BASE_URL}investmentFees.json`)
             .then((response) => response.json())
             .then((data) => {
                 setInvestmentFeesData(data.funds);

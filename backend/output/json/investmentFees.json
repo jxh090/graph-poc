@@ -1,0 +1,200 @@
+{
+  "funds": [
+    {
+      "name": "Altrinsic Global Equities Trust",
+      "adminFee": 0.75,
+      "otherAdminFeesAndCosts": 0.28,
+      "investmentFeesAndCosts": 1.15,
+      "transactionCosts": 0.12
+    },
+    {
+      "name": "Antares Elite Opportunities Fund",
+      "adminFee": 0.85,
+      "otherAdminFeesAndCosts": 0.35,
+      "investmentFeesAndCosts": 1.45,
+      "transactionCosts": 0.18
+    },
+    {
+      "name": "Antares High Growth Shares Fund",
+      "adminFee": 0.80,
+      "otherAdminFeesAndCosts": 0.32,
+      "investmentFeesAndCosts": 1.35,
+      "transactionCosts": 0.15
+    },
+    {
+      "name": "Ausbil Australian Emerging Leaders Fund",
+      "adminFee": 0.82,
+      "otherAdminFeesAndCosts": 0.31,
+      "investmentFeesAndCosts": 1.40,
+      "transactionCosts": 0.17
+    },
+    {
+      "name": "Fairview Equity Partners Emerging Companies Fund",
+      "adminFee": 0.88,
+      "otherAdminFeesAndCosts": 0.38,
+      "investmentFeesAndCosts": 1.52,
+      "transactionCosts": 0.22
+    },
+    {
+      "name": "Investors Mutual Australian Share Fund",
+      "adminFee": 0.77,
+      "otherAdminFeesAndCosts": 0.29,
+      "investmentFeesAndCosts": 1.18,
+      "transactionCosts": 0.13
+    },
+    {
+      "name": "MLC Australian Fixed Interest Index",
+      "adminFee": 0.35,
+      "otherAdminFeesAndCosts": 0.12,
+      "investmentFeesAndCosts": 0.45,
+      "transactionCosts": 0.08
+    },
+    {
+      "name": "MLC Australian Property Index",
+      "adminFee": 0.42,
+      "otherAdminFeesAndCosts": 0.18,
+      "investmentFeesAndCosts": 0.65,
+      "transactionCosts": 0.10
+    },
+    {
+      "name": "MLC Australian Shares",
+      "adminFee": 0.55,
+      "otherAdminFeesAndCosts": 0.22,
+      "investmentFeesAndCosts": 0.88,
+      "transactionCosts": 0.11
+    },
+    {
+      "name": "MLC Australian Shares Index",
+      "adminFee": 0.33,
+      "otherAdminFeesAndCosts": 0.10,
+      "investmentFeesAndCosts": 0.42,
+      "transactionCosts": 0.07
+    },
+    {
+      "name": "MLC Fixed Interest",
+      "adminFee": 0.38,
+      "otherAdminFeesAndCosts": 0.14,
+      "investmentFeesAndCosts": 0.52,
+      "transactionCosts": 0.09
+    },
+    {
+      "name": "MLC IncomeBuilder",
+      "adminFee": 0.45,
+      "otherAdminFeesAndCosts": 0.19,
+      "investmentFeesAndCosts": 0.72,
+      "transactionCosts": 0.10
+    },
+    {
+      "name": "MLC International Shares **",
+      "adminFee": 0.62,
+      "otherAdminFeesAndCosts": 0.25,
+      "investmentFeesAndCosts": 1.05,
+      "transactionCosts": 0.14
+    },
+    {
+      "name": "MLC International Shares Index (Hedged) **",
+      "adminFee": 0.48,
+      "otherAdminFeesAndCosts": 0.16,
+      "investmentFeesAndCosts": 0.78,
+      "transactionCosts": 0.12
+    },
+    {
+      "name": "MLC International Shares Index **",
+      "adminFee": 0.40,
+      "otherAdminFeesAndCosts": 0.13,
+      "investmentFeesAndCosts": 0.58,
+      "transactionCosts": 0.09
+    },
+    {
+      "name": "MLC Property",
+      "adminFee": 0.50,
+      "otherAdminFeesAndCosts": 0.20,
+      "investmentFeesAndCosts": 0.82,
+      "transactionCosts": 0.12
+    },
+    {
+      "name": "Perpetual Australian Share Fund",
+      "adminFee": 0.70,
+      "otherAdminFeesAndCosts": 0.27,
+      "investmentFeesAndCosts": 1.10,
+      "transactionCosts": 0.12
+    },
+    {
+      "name": "Schroder Wholesale Australian Equity Fund",
+      "adminFee": 0.68,
+      "otherAdminFeesAndCosts": 0.26,
+      "investmentFeesAndCosts": 1.08,
+      "transactionCosts": 0.11
+    },
+    {
+      "name": "MLC Aggressive",
+      "adminFee": 0.52,
+      "otherAdminFeesAndCosts": 0.21,
+      "investmentFeesAndCosts": 0.85,
+      "transactionCosts": 0.11
+    },
+    {
+      "name": "MLC Balanced",
+      "adminFee": 0.48,
+      "otherAdminFeesAndCosts": 0.19,
+      "investmentFeesAndCosts": 0.75,
+      "transactionCosts": 0.10
+    },
+    {
+      "name": "MLC Conservative Balanced **",
+      "adminFee": 0.42,
+      "otherAdminFeesAndCosts": 0.17,
+      "investmentFeesAndCosts": 0.65,
+      "transactionCosts": 0.09
+    },
+    {
+      "name": "MLC Growth",
+      "adminFee": 0.50,
+      "otherAdminFeesAndCosts": 0.20,
+      "investmentFeesAndCosts": 0.80,
+      "transactionCosts": 0.10
+    },
+    {
+      "name": "MLC High Growth",
+      "adminFee": 0.55,
+      "otherAdminFeesAndCosts": 0.22,
+      "investmentFeesAndCosts": 0.90,
+      "transactionCosts": 0.11
+    },
+    {
+      "name": "MLC Low Cost Balanced",
+      "adminFee": 0.35,
+      "otherAdminFeesAndCosts": 0.12,
+      "investmentFeesAndCosts": 0.48,
+      "transactionCosts": 0.08
+    },
+    {
+      "name": "MLC Low Cost Conservative Balanced",
+      "adminFee": 0.30,
+      "otherAdminFeesAndCosts": 0.10,
+      "investmentFeesAndCosts": 0.40,
+      "transactionCosts": 0.07
+    },
+    {
+      "name": "MLC Low Cost Growth",
+      "adminFee": 0.38,
+      "otherAdminFeesAndCosts": 0.13,
+      "investmentFeesAndCosts": 0.55,
+      "transactionCosts": 0.08
+    },
+    {
+      "name": "MLC Socially Responsible Growth",
+      "adminFee": 0.60,
+      "otherAdminFeesAndCosts": 0.24,
+      "investmentFeesAndCosts": 0.95,
+      "transactionCosts": 0.12
+    },
+    {
+      "name": "MLC Stable *",
+      "adminFee": 0.32,
+      "otherAdminFeesAndCosts": 0.10,
+      "investmentFeesAndCosts": 0.38,
+      "transactionCosts": 0.06
+    }
+  ]
+}

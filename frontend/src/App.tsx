@@ -478,10 +478,8 @@ function App() {
                                     )}
 
                                     <Tooltip
-                                        formatter={(
-                                            value: number | undefined,
-                                        ) =>
-                                            value !== undefined
+                                        formatter={(value) =>
+                                            typeof value === 'number'
                                                 ? `${value.toFixed(2)}%`
                                                 : "N/A"
                                         }
@@ -731,8 +729,8 @@ function App() {
                                         }
                                     />
                                     <Tooltip
-                                        formatter={(value: number | undefined) =>
-                                            value !== undefined
+                                        formatter={(value) =>
+                                            typeof value === 'number'
                                                 ? `${value.toFixed(2)}%`
                                                 : "N/A"
                                         }

@@ -434,7 +434,7 @@ function App() {
                     <>
                         <ChartWrapper>
                             <ResponsiveContainer width="100%" height={800}>
-                                <LineChart data={data}>
+                                <LineChart key={timeRange} data={data}>
                                     <XAxis
                                         dataKey="date"
                                         tickFormatter={(value) => {
@@ -455,7 +455,7 @@ function App() {
                                         tickLine={false}
                                         domain={["auto", "auto"]}
                                         tickFormatter={(value) =>
-                                            `${value.toFixed(1)}%`
+                                            `${value.toFixed(0)}%`
                                         }
                                     />
                                     <CartesianGrid vertical={false} />
@@ -465,14 +465,15 @@ function App() {
                                         selectedPortfolios.has(portfolio) ? (
                                             <Line
                                                 key={portfolio}
-                                                type="monotone"
                                                 dataKey={portfolio}
                                                 name={portfolio}
                                                 stroke={
                                                     portfolioColors[portfolio]
                                                 }
                                                 strokeWidth={2}
-                                                dot={{ r: 3 }}
+                                                dot={false}
+                                                connectNulls
+                                                animationDuration={1000}
                                             />
                                         ) : null,
                                     )}

@@ -11,7 +11,6 @@ import {
 import {
     Container,
     Section,
-    SectionTitle,
     ButtonGroup,
     Button,
     ChartCard,
@@ -159,10 +158,6 @@ function App() {
             }
             return next;
         });
-    };
-
-    const clearAllPortfolios = () => {
-        setSelectedPortfolios(new Set());
     };
 
     const handleTimeRangeChange = (nextRange: TimeRange) => {

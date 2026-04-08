@@ -64,6 +64,7 @@ export const GlobalStyles = createGlobalStyle`
     place-items: center;
     min-width: 320px;
     min-height: 100vh;
+    background: #eae5db;
   }
 
   h1 {
@@ -99,7 +100,7 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   #root {
-    max-width: 1280px;
+    max-width: 1440px;
     margin: 0 auto;
     padding: 1rem;
     width: 100%;

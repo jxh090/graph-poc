@@ -1,17 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
     CartesianGrid,
-    Legend,
     Line,
     LineChart,
-    Pie,
-    PieChart,
     ResponsiveContainer,
     Tooltip,
     XAxis,
     YAxis,
 } from "recharts";
-import { RechartsDevtools } from "@recharts/devtools";
 import {
     Container,
     Section,
@@ -20,34 +16,24 @@ import {
     Button,
     ChartCard,
     ChartHeader,
-    CheckboxLabel,
     ChartWrapper,
     ChartButton,
     ChartButtonGroup,
     FlexBox,
+    AccountLabel,
+    AccountSelect,
+    ToggleGrid,
+    ToggleLabel,
+    ToggleTrack,
 } from "./App.styles";
 
 type AccountType = "Super" | "ttr" | "pension";
 type TimeRange = "1M" | "3M" | "1YR" | "3YR" | "5YR" | "10YR" | "SI";
+type ViewMode = "chart" | "table";
+type ChartDataPoint = Record<string, number | string>;
+type ChartDataByRange = Record<TimeRange, ChartDataPoint[]>;
 
 const TIME_RANGES: TimeRange[] = ["1M", "3M", "1YR", "3YR", "5YR", "10YR", "SI"];
-
-type PortfolioGroup = {
-    label: string;
-    portfolios: string[];
-};
-
-type PortfolioSection = {
-    label: string;
-    groups: PortfolioGroup[];
-};
-
-type AccordionProps = {
-    groups: PortfolioSection[];
-    selectedPortfolios: Set<string>;
-    togglePortfolio: (portfolio: string) => void;
-    portfolioColors: Record<string, string>;
-};
 
 // All available portfolios from Excel
 const ALL_PORTFOLIOS = [
@@ -97,219 +83,51 @@ function generatePortfolioColors(): Record<string, string> {
 
     return colors;
 }
-const PORTFOLIO_GROUPS = [
-    {
-        label: "Ready made portfolios",
-        groups: [
-            {
-                label: "MLC Simple Choice",
-                portfolios: [
-                    "MLC Aggressive",
-                    "MLC Growth",
-                    "MLC High Growth",
-                    "MLC Balanced",
-                    "MLC Stable *",
-                    "MLC Conservative Balanced **",
-                ],
-            },
-            {
-                label: "MLC Low Cost",
-                portfolios: [
-                    "MLC Low Cost Growth",
-                    "MLC Low Cost Conservative Balanced",
-                    "MLC Low Cost Balanced",
-                ],
-            },
-            {
-                label: "MLC Socially Responsible",
-                portfolios: ["MLC Socially Responsible Growth"],
-            },
-        ],
-    },
-    {
-        label: "Build-your-own-portfolio",
-        groups: [
-            {
-                label: "Cash and Fixed Interest",
-                portfolios: [
-                    "MLC Cash",
-                    "MLC Australian Fixed Interest Index",
-                    "MLC Fixed Interest",
-                    "NAB Term Deposit",
-                ],
-            },
-            {
-                label: "Property",
-                portfolios: ["MLC Property", "MLC Australian Property Index"],
-            },
-            {
-                label: "Global Shares",
-                portfolios: [
-                    "MLC International Shares **",
-                    "MLC International Shares Index **",
-                    "MLC International Shares Index (Hedged) **",
-                    "Altrinsic Global Equities Trust",
-                ],
-            },
-            {
-                label: "Australian Shares",
-                portfolios: [
-                    "Antares Elite Opportunities Fund",
-                    "Antares High Growth Shares Fund",
-                    "Ausbil Australian Emerging Leaders Fund",
-                    "Fairview Equity Partners Emerging Companies Fund",
-                    "Investors Mutual Australian Share Fund",
-                    "MLC Australian Shares",
-                    "MLC Australian Shares Index",
-                    "MLC IncomeBuilder",
-                    "Perpetual Australian Share Fund",
-                    "Schroder Wholesale Australian Equity Fund",
-                ],
-            },
-        ],
-    },
+
+const QUICK_TOGGLE_PORTFOLIOS: PortfolioType[] = [
+    "MLC Stable *",
+    "MLC Conservative Balanced **",
+    "MLC Balanced",
+    "MLC Growth",
+    "MLC High Growth",
+    "MLC Aggressive",
 ];
 
-function Accordion({
-    groups,
-    selectedPortfolios,
-    togglePortfolio,
-    portfolioColors,
-}: AccordionProps) {
-    const [openSections, setOpenSections] = useState<{
-        [key: string]: boolean;
-    }>({
-        "Ready made portfolios": true,
-        "Build-your-own-portfolio": true,
-    });
+const RANGE_BUTTONS: { label: string; value: TimeRange }[] = [
+    { label: "10Y", value: "10YR" },
+    { label: "5Y", value: "5YR" },
+    { label: "3Y", value: "3YR" },
+    { label: "1Y", value: "1YR" },
+    { label: "3M", value: "3M" },
+    { label: "1M", value: "1M" },
+];
 
-    const toggleSection = (key: string) => {
-        setOpenSections((prev) => ({
-            ...prev,
-            [key]: !prev[key],
-        }));
-    };
-
-    return (
-        <div>
-            {groups.map((section: PortfolioSection) => (
-                <div key={section.label}>
-                    <div
-                        style={{
-                            fontWeight: "bold",
-                            cursor: "pointer",
-                            marginTop: 12,
-                            marginBottom: 4,
-                        }}
-                        onClick={() => toggleSection(section.label)}
-                    >
-                        {section.label}{" "}
-                        {openSections[section.label] ? "▼" : "▶"}
-                    </div>
-                    {openSections[section.label] && (
-                        <div style={{ marginLeft: 16 }}>
-                            {section.groups.map((group: PortfolioGroup) => (
-                                <div
-                                    key={group.label}
-                                    style={{ marginBottom: 8 }}
-                                >
-                                    <div
-                                        style={{
-                                            fontWeight: 500,
-                                            marginBottom: 4,
-                                        }}
-                                    >
-                                        {group.label}
-                                    </div>
-                                    {group.portfolios.map((portfolio: string) => (
-                                        <CheckboxLabel
-                                            key={portfolio}
-                                            style={{
-                                                display: "flex",
-                                                alignItems: "center",
-                                                minWidth: 0,
-                                                overflow: "hidden",
-                                            }}
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedPortfolios.has(
-                                                    portfolio,
-                                                )}
-                                                onChange={() =>
-                                                    togglePortfolio(portfolio)
-                                                }
-                                            />
-                                            <span
-                                                style={{
-                                                    display: "inline-block",
-                                                    width: "8px",
-                                                    height: "8px",
-                                                    backgroundColor:
-                                                        portfolioColors[
-                                                            portfolio
-                                                        ],
-                                                    borderRadius: "50%",
-                                                    marginRight: "4px",
-                                                    flexShrink: 0,
-                                                }}
-                                            />
-                                            <span
-                                                style={{
-                                                    whiteSpace: "nowrap",
-                                                    overflow: "hidden",
-                                                    textOverflow: "ellipsis",
-                                                    flex: 1,
-                                                }}
-                                            >
-                                                {portfolio}
-                                            </span>
-                                        </CheckboxLabel>
-                                    ))}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            ))}
-        </div>
-    );
-}
-
-// Color palette for investment fees
-const FEE_COLORS: Record<string, string> = {
-    "Admin Fee": "#3B82F6",
-    "Other Admin Fees & Costs": "#F59E0B",
-    "Investment Fees & Costs": "#10B981",
-    "Transaction Costs": "#EF4444",
+const formatYearTick = (value: string | number) => {
+    const date = new Date(value);
+    return date.toLocaleDateString("en-AU", { year: "numeric" });
 };
 
+const formatPercent = (value: number | string | readonly (number | string)[] | undefined) => {
+    const normalizedValue = Array.isArray(value) ? value[0] : value;
+    return typeof normalizedValue === "number" ? `${normalizedValue.toFixed(2)}%` : "N/A";
+};
+
+const shortenPortfolioName = (portfolio: string) =>
+    portfolio.replace("MLC ", "").replace(" **", "").replace(" *", "");
+
 function App() {
-    const [viewMode, setViewMode] = useState<"chart" | "table" | "pie">(
-        "chart",
-    );
+    const [viewMode, setViewMode] = useState<ViewMode>("chart");
     const [accountType, setAccountType] = useState<AccountType>("Super");
     const [timeRange, setTimeRange] = useState<TimeRange>("10YR");
+    const [isRangeSwitching, setIsRangeSwitching] = useState(false);
+    const rangeSwitchTimerRef = useRef<number | undefined>(undefined);
     const [selectedPortfolios, setSelectedPortfolios] = useState<Set<string>>(
         new Set(["MLC High Growth"]),
     );
 
-    const [realData, setRealData] =
-        useState<Record<TimeRange, Array<Record<string, number | string>>>>();
-
-    const [investmentFeesData, setInvestmentFeesData] = useState<
-        Array<{
-            name: string;
-            adminFee: number;
-            otherAdminFeesAndCosts: number;
-            investmentFeesAndCosts: number;
-            transactionCosts: number;
-        }>
-    >([]);
-    const [selectedFund, setSelectedFund] = useState<string | null>(null);
+    const [realData, setRealData] = useState<ChartDataByRange>();
 
     useEffect(() => {
-        // fetch("http://localhost:3000/chartData.json")
         fetch(`${import.meta.env.BASE_URL}chartData.json`)
             .then((response) => response.json())
             .then((data) => {
@@ -321,41 +139,47 @@ function App() {
     }, []);
 
     useEffect(() => {
-        // fetch("http://localhost:3000/investmentFees.json")
-        fetch(`${import.meta.env.BASE_URL}investmentFees.json`)
-            .then((response) => response.json())
-            .then((data) => {
-                setInvestmentFeesData(data.funds);
-                if (data.funds.length > 0) {
-                    setSelectedFund(data.funds[0].name);
-                }
-            })
-            .catch((error) => {
-                console.error("Error fetching investment fees:", error);
-            });
+        return () => {
+            if (rangeSwitchTimerRef.current !== undefined) {
+                window.clearTimeout(rangeSwitchTimerRef.current);
+            }
+        };
     }, []);
 
-    // Data is already in percentage format from the conversion script
-    const data = realData ? realData[timeRange] : [];
-
-    const portfolioColors = generatePortfolioColors();
+    const data = realData?.[timeRange] ?? [];
+    const portfolioColors = useMemo(() => generatePortfolioColors(), []);
 
     const togglePortfolio = (portfolio: string) => {
-        const newSelected = new Set(selectedPortfolios);
-        // if (selectedPortfolios.size >= 4) {
-        //     console.error("You can only select up to 4 portfolios at a time."); // Log error when limit is reached
-        //     return; // Limit to 4 portfolios
-        // }
-        if (newSelected.has(portfolio)) {
-            newSelected.delete(portfolio);
-        } else {
-            newSelected.add(portfolio);
-        }
-        setSelectedPortfolios(newSelected);
+        setSelectedPortfolios((previous) => {
+            const next = new Set(previous);
+            if (next.has(portfolio)) {
+                next.delete(portfolio);
+            } else {
+                next.add(portfolio);
+            }
+            return next;
+        });
     };
 
     const clearAllPortfolios = () => {
         setSelectedPortfolios(new Set());
+    };
+
+    const handleTimeRangeChange = (nextRange: TimeRange) => {
+        if (nextRange === timeRange) {
+            return;
+        }
+
+        if (rangeSwitchTimerRef.current !== undefined) {
+            window.clearTimeout(rangeSwitchTimerRef.current);
+        }
+
+        setIsRangeSwitching(true);
+        setTimeRange(nextRange);
+
+        rangeSwitchTimerRef.current = window.setTimeout(() => {
+            setIsRangeSwitching(false);
+        }, 220);
     };
 
     const getPortfolioReturn = (
@@ -371,44 +195,34 @@ function App() {
 
     return (
         <Container>
-            {/* Account Type Toggle */}
+            {/* Top Controls */}
             <Section
                 style={{
-                    display: "flex",
-                    gap: "16px",
-                    flexWrap: "wrap",
-                    justifyContent: "space-between",
-                    flexDirection: "row",
+                    marginBottom: "24px",
                 }}
             >
-                <ButtonGroup>
-                    {(["Super", "TTR", "Pension"] as AccountType[]).map(
-                        (type) => (
-                            <Button
-                                key={type}
-                                $isActive={accountType === type}
-                                onClick={() => setAccountType(type)}
-                            >
-                                {type}
-                            </Button>
-                        ),
-                    )}
-                </ButtonGroup>
-                <ButtonGroup>
-                    {["CHART", "TABLE", "PIE"].map((type) => (
-                        <Button
-                            key={type}
-                            $isActive={viewMode === type.toLowerCase()}
-                            onClick={() =>
-                                setViewMode(
-                                    type.toLowerCase() as
-                                        | "chart"
-                                        | "table"
-                                        | "pie",
-                                )
-                            }
+                <ChartButtonGroup>
+                    {RANGE_BUTTONS.map((range) => (
+                        <ChartButton
+                            key={range.value}
+                            $isActive={timeRange === range.value}
+                            onClick={() => handleTimeRangeChange(range.value)}
                         >
-                            {type}
+                            {range.label}
+                        </ChartButton>
+                    ))}
+                </ChartButtonGroup>
+                <ButtonGroup>
+                    {[
+                        { label: "Graph", value: "chart" },
+                        { label: "List", value: "table" },
+                    ].map((mode) => (
+                        <Button
+                            key={mode.value}
+                            $isActive={viewMode === mode.value}
+                            onClick={() => setViewMode(mode.value as "chart" | "table")}
+                        >
+                            {mode.label}
                         </Button>
                     ))}
                 </ButtonGroup>
@@ -416,49 +230,49 @@ function App() {
 
             {/* Integrated Chart with Controls */}
             <ChartCard>
-                <div>
-                    <h2>Investments over time</h2>
-                    <ChartButtonGroup>
-                        {TIME_RANGES.map((range) => (
-                            <ChartButton
-                                key={range}
-                                $isActive={timeRange === range}
-                                onClick={() => setTimeRange(range)}
-                            >
-                                {range === "SI" ? "SI" : range}
-                            </ChartButton>
-                        ))}
-                    </ChartButtonGroup>
+                <div style={{ paddingBottom: '48px' }}>
+                    <AccountLabel htmlFor="account-type-select">
+                        Select account type
+                    </AccountLabel>
+                    <AccountSelect
+                        id="account-type-select"
+                        value={accountType}
+                        onChange={(event) =>
+                            setAccountType(event.target.value as AccountType)
+                        }
+                    >
+                        <option value="Super">Super</option>
+                        <option value="ttr">TTR</option>
+                        <option value="pension">Pension</option>
+                    </AccountSelect>
                 </div>
                 {viewMode === "chart" && (
                     <>
                         <ChartWrapper>
-                            <ResponsiveContainer width="100%" height={800}>
-                                <LineChart key={timeRange} data={data}>
+                            <ResponsiveContainer width="100%" height={480}>
+                                <LineChart data={data}>
                                     <XAxis
                                         dataKey="date"
-                                        tickFormatter={(value) => {
-                                            const d = new Date(value);
-                                            return d.toLocaleDateString(
-                                                "en-AU",
-                                                {
-                                                    day: "2-digit",
-                                                    month: "short",
-                                                    year: "numeric",
-                                                },
-                                            );
-                                        }}
+                                        tick={{ fill: "#3a3a3a", fontSize: 14 }}
+                                        tickMargin={12}
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tickFormatter={formatYearTick}
                                     />
                                     <YAxis
                                         orientation="right"
                                         axisLine={false}
                                         tickLine={false}
                                         domain={["auto", "auto"]}
-                                        tickFormatter={(value) =>
-                                            `${value.toFixed(0)}%`
-                                        }
+                                        tickCount={6}
+                                        tick={{ fill: "#3a3a3a", fontSize: 14 }}
+                                        tickFormatter={(value) => `${value.toFixed(0)}%`}
                                     />
-                                    <CartesianGrid vertical={false} />
+                                    <CartesianGrid
+                                        vertical={false}
+                                        stroke="#9f9f9f"
+                                        strokeOpacity={0.6}
+                                    />
 
                                     {/* Portfolio Type Lines (conditionally rendered) */}
                                     {ALL_PORTFOLIOS.map((portfolio) =>
@@ -473,24 +287,22 @@ function App() {
                                                 strokeWidth={2}
                                                 dot={false}
                                                 connectNulls
-                                                animationDuration={1000}
+                                                isAnimationActive={!isRangeSwitching}
+                                                animationBegin={0}
+                                                animationDuration={650}
+                                                animationEasing="ease-in-out"
+                                                animateNewValues={false}
                                             />
                                         ) : null,
                                     )}
 
                                     <Tooltip
-                                        formatter={(value) =>
-                                            typeof value === 'number'
-                                                ? `${value.toFixed(2)}%`
-                                                : "N/A"
-                                        }
+                                        formatter={(value) => formatPercent(value)}
                                         labelStyle={{
                                             color: "#2c3e50",
                                             fontWeight: 600,
                                         }}
                                     />
-                                    <Legend />
-                                    <RechartsDevtools />
                                 </LineChart>
                             </ResponsiveContainer>
                         </ChartWrapper>
@@ -501,43 +313,29 @@ function App() {
                                         display: "flex",
                                         justifyContent: "space-between",
                                         alignItems: "center",
-                                        marginBottom: "10px",
+                                        marginBottom: "18px",
                                     }}
                                 >
-                                    <SectionTitle
-                                        style={{
-                                            marginBottom: "0",
-                                            fontWeight: 700,
-                                        }}
-                                    >
-                                        Compare Investments
-                                    </SectionTitle>
-                                    <div>
-                                        <Button
-                                            $isActive={false}
-                                            onClick={clearAllPortfolios}
-                                            style={{
-                                                padding: "4px 12px",
-                                                fontSize: "12px",
-                                            }}
-                                        >
-                                            Clear All
-                                        </Button>
-                                    </div>
                                 </div>
-                                <div
-                                    style={{
-                                        overflowY: "auto",
-                                        padding: "4px",
-                                    }}
-                                >
-                                    <Accordion
-                                        groups={PORTFOLIO_GROUPS}
-                                        selectedPortfolios={selectedPortfolios}
-                                        togglePortfolio={togglePortfolio}
-                                        portfolioColors={portfolioColors}
-                                    />
-                                </div>
+                                <ToggleGrid>
+                                    {QUICK_TOGGLE_PORTFOLIOS.map((portfolio) => {
+                                        const checked = selectedPortfolios.has(portfolio);
+                                        return (
+                                            <ToggleLabel key={portfolio}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={checked}
+                                                    onChange={() => togglePortfolio(portfolio)}
+                                                />
+                                                <ToggleTrack
+                                                    $checked={checked}
+                                                    $color={portfolioColors[portfolio]}
+                                                />
+                                                <span>{shortenPortfolioName(portfolio)}</span>
+                                            </ToggleLabel>
+                                        );
+                                    })}
+                                </ToggleGrid>
                             </div>
                         </ChartHeader>
                     </>
@@ -658,99 +456,6 @@ function App() {
                             </div>
                         </div>
                     </FlexBox>
-                )}
-                {viewMode === "pie" && (
-                    <>
-                        <div style={{ marginBottom: "20px", marginTop: "20px" }}>
-                            <label htmlFor="fund-select" style={{ marginRight: "10px", fontWeight: "bold" }}>
-                                Select Fund:
-                            </label>
-                            <select
-                                id="fund-select"
-                                value={selectedFund || ""}
-                                onChange={(e) => setSelectedFund(e.target.value)}
-                                style={{
-                                    padding: "8px 12px",
-                                    fontSize: "14px",
-                                    borderRadius: "4px",
-                                    border: "1px solid #ccc",
-                                    maxWidth: "400px",
-                                    width: "100%",
-                                }}
-                            >
-                                <option value="">-- Select a fund --</option>
-                                {investmentFeesData.map((fund) => (
-                                    <option key={fund.name} value={fund.name}>
-                                        {fund.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        {selectedFund && investmentFeesData.length > 0 ? (
-                            <ResponsiveContainer height={500} width="100%">
-                                <PieChart height={400} width={400}>
-                                    <Pie
-                                        cx="50%"
-                                        cy="50%"
-                                        data={(() => {
-                                            const fund = investmentFeesData.find(
-                                                (f) => f.name === selectedFund,
-                                            );
-                                            if (!fund) return [];
-                                            return [
-                                                {
-                                                    name: "Admin Fee",
-                                                    value: fund.adminFee,
-                                                    fill: FEE_COLORS["Admin Fee"],
-                                                },
-                                                {
-                                                    name: "Other Admin Fees & Costs",
-                                                    value: fund.otherAdminFeesAndCosts,
-                                                    fill: FEE_COLORS["Other Admin Fees & Costs"],
-                                                },
-                                                {
-                                                    name: "Investment Fees & Costs",
-                                                    value: fund.investmentFeesAndCosts,
-                                                    fill: FEE_COLORS["Investment Fees & Costs"],
-                                                },
-                                                {
-                                                    name: "Transaction Costs",
-                                                    value: fund.transactionCosts,
-                                                    fill: FEE_COLORS["Transaction Costs"],
-                                                },
-                                            ];
-                                        })()}
-                                        dataKey="value"
-                                        innerRadius={60}
-                                        outerRadius={80}
-                                        animationDuration={100}
-                                        animationBegin={0}
-                                        label={({ name, value }) =>
-                                            `${name}: ${value.toFixed(2)}%`
-                                        }
-                                    />
-                                    <Tooltip
-                                        formatter={(value) =>
-                                            typeof value === 'number'
-                                                ? `${value.toFixed(2)}%`
-                                                : "N/A"
-                                        }
-                                    />
-                                    <Legend />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        ) : (
-                            <div
-                                style={{
-                                    textAlign: "center",
-                                    padding: "40px",
-                                    color: "#666",
-                                }}
-                            >
-                                Please select a fund to view fees breakdown
-                            </div>
-                        )}
-                    </>
                 )}
             </ChartCard>
         </Container>
